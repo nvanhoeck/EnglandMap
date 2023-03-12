@@ -13,7 +13,7 @@ const handleEvent = async (event: APIGatewayEvent, context: APIGatewayEventReque
     let statusCode = '200';
 
     try {
-        body = await dynamo.scan({ TableName: event.queryStringParameters.TableName }).promise();
+        body = await dynamo.scan({ TableName: 'Locations' }).promise();
     } catch (err) {
         statusCode = '400';
         body = err.message;

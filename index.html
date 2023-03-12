@@ -117,30 +117,44 @@
       var RobRoyGuesthouseMarker = new L.Marker([51.08892874373544, 1.188542346902516], markerOptions('RobRoyGuesthouse', 25, 'B&B'));
       RobRoyGuesthouseMarker.addTo(map);
 
+
+      var locations;
+      doGet();
+
       function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-          } else {
-            alert("Geolocation is not supported by this browser.");
-          }
+          var latestLocation = locations[locations.length -1]
+          console.log(latestLocation)
+          showPosition(latestLocation.Latitude, latestLocation.Longitude)
         }
         
-        function showPosition(position) {
-            var wijMarker = new L.Marker([position.coords.latitude, position.coords.longitude], markerOptions('We are here', 25, 'wij'));
+        function showPosition(latitude,  longitude) {
+            var wijMarker = new L.Marker([latitude, longitude], markerOptions('We are here', 25, 'wij'));
             wijMarker.addTo(map);
-            map.setView([position.coords.latitude, position.coords.longitude], 15)
+            map.setView([latitude, longitude], 15)
         }
-        getLocation()
 
         function handleLocation(position) {
-          doPost(position.coords.longitude, position.coords.latitude, 'test', 0)
+          doPost(position.coords.latitude, position.coords.longitude, 'test', locations?.length || 0)
         }
 
         function showPopup() {
             navigator.geolocation.getCurrentPosition(handleLocation)
         }
 
-        function doPost(long, lat, desc, listSize) {
+        function reqListener(evt) {
+          console.log('respons', evt.currentTarget.responseText.body)
+          locations = JSON.parse(JSON.parse(evt.currentTarget.responseText).body).Items
+          console.log(locations)
+        }
+
+        function doGet() {
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", reqListener);
+            xhr.open("GET", "https://omkdmr8fa6.execute-api.eu-west-1.amazonaws.com/prod/locations");
+            xhr.send();
+        }
+
+        function doPost(lat, long, desc, listSize) {
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "https://omkdmr8fa6.execute-api.eu-west-1.amazonaws.com/prod/locations");
 
@@ -153,11 +167,11 @@
            let data =  {
                 "TableName": "Locations",
                 "Item": {
-                    "id": 0,
+                    "id": listSize,
                     "Longitude":long,
                     "Latitude":lat,
-                    "Beschrijving":desc,
-                    "Tijdstip": Date.now().toLocaleString(),
+                    "Beschrijving": desc,
+                    "Tijdstip": Date.now().toString(),
                     "TijdstipEpoch": Date.now(),
                 }
             }
@@ -167,27 +181,22 @@
 
         document.getElementById('location').addEventListener("click", getLocation)
         document.getElementById('update').addEventListener("click", showPopup)
-
-        function uuidv4() {
-          return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
-}
     </script>
     <script>
         var x = document.getElementById("gps");
         function getLocation() {
           if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
+            navigator.geolocation.getCurrentPosition(showPositionOnScreen);
           } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
           }
         }
         
-        function showPosition(position) {
+        function showPositionOnScreen(position) {
           x.innerHTML = "Latitude: " + position.coords.latitude +
           "<br>Longitude: " + position.coords.longitude;
         }        
+        getLocation() ;       
 
     </script>
     <script>
