@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Add two basemap layers</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+
+    <!-- Load Esri Leaflet Vector from CDN -->
+    <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js" crossorigin=""></script>
+    <style>
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #323232;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      const apiKey = "AAPK1e49dfb738404c3b98f6104f8fc16e0d5TlIqauPv_BhDBDMfKfG0Ni1ifY98OBzfzC0NMRz6mNQAu3Kepqitio_CaJyw-qe";
+
+      const map = L.map("map").setView([51.12697723187457, 1.3335895828510886], 10);
+
+      L.esri.Vector.vectorBasemapLayer("ArcGIS:ModernAntique:Base", {
+        apikey: apiKey,
+        pane:"tilePane" // Create the base layer in `tilePane` rather than the default `overlayPane`
+      }).addTo(map);
+
+      L.esri.Vector.vectorBasemapLayer("ArcGIS:Topographic", {
+        apikey: apiKey
+      }).addTo(map);
+
+      //Icons options
+      var iconOptions = (size, naamFoto) => ({
+        iconUrl: naamFoto + '.png',
+        iconSize: [size, size]
+      })
+
+      //Marker Options
+      var markerOptions = (title, sizeFoto, naamFoto) => ({
+            title: title,
+            clickable: true,
+            icon: L.icon(iconOptions(sizeFoto, naamFoto))
+      })
+
+      //Markers
+      var schipMarker = new L.Marker([51.12697723187457, 1.3335895828510886  ], markerOptions('Dover', 25, 'schip'));
+      schipMarker.addTo(map);
+
+      var goGlampMarker = new L.Marker([51.163790, 0.662626], markerOptions('Go Glamp', 25, 'tent'));
+      goGlampMarker.addTo(map);
+
+      var StockbridgeviewMarker = new L.Marker([51.116994, -1.510334], markerOptions('StockbridgeView', 25, 'tent'));
+      StockbridgeviewMarker.addTo(map);
+
+      var WoodovisParkMarker = new L.Marker([50.548938013747396, -4.215712085330895], markerOptions('WoodovisPark', 25, 'tent'));
+      WoodovisParkMarker.addTo(map);
+
+      var TheCrownInnMarker = new L.Marker([51.375789, -1.948202], markerOptions('TheCrownInn', 25, 'tent'));
+      TheCrownInnMarker.addTo(map);
+
+      var BredonValeCaravanCampingMarker = new L.Marker([52.122061, -1.943059], markerOptions('BredonValeCaravanCamping', 25, 'tent'));
+      BredonValeCaravanCampingMarker.addTo(map);
+
+      var HideAwayEscapesMarker = new L.Marker([51.805722, -4.723392], markerOptions('HideAwayEscapes', 25, 'tent'));
+      HideAwayEscapesMarker.addTo(map);
+
+      var GarthyFogMarker = new L.Marker([52.705752, -4.020562], markerOptions('GarthyFog', 25, 'tent'));
+      GarthyFogMarker.addTo(map);
+
+      var PenisarMynyddCaravanParkMarker = new L.Marker([53.282061, -3.360819], markerOptions('PenisarMynyddCaravanpark', 25, 'tent'));
+      PenisarMynyddCaravanParkMarker.addTo(map);
+
+      var BlackbrookLodgeCampingAndCaravanningMarker = new L.Marker([53.001042, -1.597239], markerOptions('BlackbrookLodgeCampingAndCaravanning', 25, 'tent'));
+      BlackbrookLodgeCampingAndCaravanningMarker.addTo(map);
+
+      var HowgillLodgeMarker = new L.Marker([54.029556, -1.903328], markerOptions('HowgillLodge', 25, 'tent'));
+      HowgillLodgeMarker.addTo(map);
+
+      var SykesideCampingparkMarker = new L.Marker([54.498608, -2.924738], markerOptions('SykesideCampingpark', 25, 'tent'));
+      SykesideCampingparkMarker.addTo(map);
+
+      var FallowfielDeneCaravanCampingParkMarker = new L.Marker([55.003415, -2.098948], markerOptions('FallowfielDeneCaravanCampingPark', 25, 'tent'));
+      FallowfielDeneCaravanCampingParkMarker.addTo(map);
+
+      var CoastCastlesHolidayCampSideMarker = new L.Marker([55.426304, -1.606282], markerOptions('CoastCastlesHolidayCampSide', 25, 'tent'));
+      CoastCastlesHolidayCampSideMarker.addTo(map);
+
+      var TheNewInnMarker = new L.Marker([54.290741, -0.840936], markerOptions('TheNewInn', 25, 'tent'));
+      TheNewInnMarker.addTo(map);
+
+      var WhiteCottageHolidayParkMarker = new L.Marker([53.890897, -0.179570], markerOptions('WhiteCottageHolidayPark', 25, 'tent'));
+      WhiteCottageHolidayParkMarker.addTo(map);
+
+      var RobRoyGuesthouseMarker = new L.Marker([51.08892874373544, 1.188542346902516], markerOptions('RobRoyGuesthouse', 25, 'B&B'));
+      RobRoyGuesthouseMarker.addTo(map);
+
+
+    </script>
+  </body>
+</html>
