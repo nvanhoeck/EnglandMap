@@ -1,18 +1,10 @@
-.gps {
-    position: fixed;
-    right: 0;
-    z-index: 1000;
-    width: 200px;
-    height: 150px;
-    background-color: white;
-}
+
 
 .buttons {
     position: fixed;
-    right: 0;
+    right: 200px;
     bottom: 25vh;
     z-index: 1000;
-    width: 15vw;
     height: 5vh;
 }
 
