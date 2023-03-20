@@ -21,10 +21,6 @@ export class InfraStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', {
-      maxAzs: 2, // Default is all AZs in the region
-    });
-
     const lambdaRole = new iam.Role(this, 'lambdaRole', {
       roleName: `${context.appName}-lambda-role-${context.stage}`,
       description: `Lambda role for ${context.appName}`,
