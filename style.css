@@ -1,11 +1,16 @@
 
 
 .buttons {
-    position: fixed;
-    right: 200px;
-    bottom: 25vh;
-    z-index: 1000;
-    height: 5vh;
+  position: fixed;
+  right: 5vw;
+  bottom: 15vh;
+  z-index: 1000;
+  /* height: 5vh; */
+  width: auto;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .btn {
