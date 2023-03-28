@@ -307,31 +307,31 @@
         function doGet() {
             let xhr = new XMLHttpRequest();
             xhr.addEventListener("load", reqListener);
-            xhr.open("GET", "https://omkdmr8fa6.execute-api.eu-west-1.amazonaws.com/prod/locations");
+            xhr.open("GET", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
             xhr.send();
         }
 
         function doPost(lat, long, desc, listSize) {
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "https://omkdmr8fa6.execute-api.eu-west-1.amazonaws.com/prod/locations");
+            xhr.open("POST", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
 
             xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 console.log(xhr.status);
                 console.log(xhr.responseText);
             }};
-
            let data =  {
-                "TableName": "Locations",
+                "TableName": "EnglandLocations",
                 "Item": {
-                    "id": listSize,
+                    "id": "0",
                     "Longitude":long,
                     "Latitude":lat,
                     "Beschrijving": desc,
                     "Tijdstip": Date.now().toString(),
-                    "TijdstipEpoch": Date.now(),
+                    "TijdstipEpoch": String(Date.now()),
                 }
             }
+            console.log(JSON.stringify(data));
 
         xhr.send(JSON.stringify(data));
         }
