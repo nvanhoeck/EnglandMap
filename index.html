@@ -28,6 +28,35 @@
     </style>
   </head>
   <body>
+    <div class="form-popup-bg">
+      <div class="form-container">
+        <button id="btnCloseForm" class="close-button">X</button>
+        <h1>Update van onze locatie</h1>
+        <form action="">
+          <div class="form-group">
+            <label for="">Locatie</label>
+            <input id="title" type="text" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="">Omschrijving</label>
+            <textarea id="desc" class="form-control"> </textarea>
+          </div>
+          <button id="submitBtn">Upload</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup-bg">
+      <div class="form-container">
+        <button id="btnClosePopup" class="close-button">X</button>
+        <h1>Update van onze locatie</h1>
+        <form action="">
+          <div class="form-group">
+            <h2 id="titel" class="form-control"></h2>
+            <p id="omschrijving" class="form-control"></p>
+          </div>
+        </form>
+      </div>
+    </div>
     <div class="buttons">
         <a class='btn' href="#" id="location">
             <i class="fab fa fa-user"></i>
@@ -65,6 +94,7 @@
       })
 
       //Markers
+
       var schipMarker = new L.Marker([51.12697723187457, 1.3335895828510886  ], markerOptions('Dover', 25, 'schip'));
       schipMarker.addTo(map);
 
@@ -269,12 +299,6 @@
       var FlamboroughMarker = new L.Marker([54.116713676938154, -0.08388877388151282], markerOptions('Flamboroughy', 25, 'binocles'));
       FlamboroughMarker.addTo(map);
 
-
-
-      var locations;
-      doGet();
-
-
       var locations;
       doGet();
 
@@ -291,10 +315,21 @@
         }
 
         function handleLocation(position) {
-          doPost(position.coords.latitude, position.coords.longitude, 'test', locations?.length || 0)
+          const title = document.getElementById('title').value
+          const desc = document.getElementById('desc').value
+          doPost(position.coords.latitude, position.coords.longitude, title, desc, locations?.length || 0)
         }
 
         function showPopup() {
+          document.getElementsByClassName('form-popup-bg').item(0).classList.add('is-visible');
+        }
+
+        function showStatus() {
+          console.log(document.getElementsByClassName('popup-bg').item(0))
+          document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+        }
+
+        function sendData() {
             navigator.geolocation.getCurrentPosition(handleLocation)
         }
 
@@ -302,6 +337,19 @@
           console.log('respons', evt.currentTarget.responseText.body)
           locations = JSON.parse(JSON.parse(evt.currentTarget.responseText).body).Items
           console.log(locations)
+          locations.forEach(location => {
+            var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title || '', 25, 'point'));
+            locationMarker.addTo(map);
+            if(location.Title) {
+              console.log(document.querySelector(`[title=${location.Title}]`))
+              document.querySelector(`[title=${location.Title}]`).addEventListener('click', () => {
+                document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+                showStatus()
+                document.getElementById('titel').innerText = location.Title
+                document.getElementById('omschrijving').innerText = location.Desc
+              });
+          }
+          })
         }
 
         function doGet() {
@@ -311,7 +359,7 @@
             xhr.send();
         }
 
-        function doPost(lat, long, desc, listSize) {
+        function doPost(lat, long, title, desc, listSize) {
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
 
@@ -326,35 +374,54 @@
                     "id": "0",
                     "Longitude":long,
                     "Latitude":lat,
-                    "Beschrijving": desc,
+                    "Title": title,
+                    "Desc": desc,
                     "Tijdstip": Date.now().toString(),
                     "TijdstipEpoch": String(Date.now()),
                 }
             }
-            console.log(JSON.stringify(data));
-
-        xhr.send(JSON.stringify(data));
+          console.log(JSON.stringify(data));
+          xhr.send(JSON.stringify(data));
+          closeForm()
         }
+
+        function closeForm() {
+          document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        }
+
+        document.getElementById('btnCloseForm').addEventListener('click', function(event) {
+          event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        })
+
+        document.getElementById('btnClosePopup').addEventListener('click', function(event) {
+          event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        })
+
+        document.getElementsByClassName('form-popup-bg').item(0).addEventListener('click', function(event) {
+          if (event.target.classList.contains('form-popup-bg') || event.target.id === 'btnCloseForm') {
+            event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+          }
+        });
+
+        function closePopup() {
+          document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+        }
+
+        document.getElementsByClassName('popup-bg').item(0).addEventListener('click', function(event) {
+          if (event.target.classList.contains('popup-bg') || event.target.id === 'btnClosePopup') {
+            event.preventDefault();
+            document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+        }
+        
+        });
+  
 
         document.getElementById('location').addEventListener("click", getLocation)
         document.getElementById('update').addEventListener("click", showPopup)
-    </script>
-    <script>
-        var x = document.getElementById("gps");
-        function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPositionOnScreen);
-          } else {
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-        
-        function showPositionOnScreen(position) {
-          x.innerHTML = "Latitude: " + position.coords.latitude +
-          "<br>Longitude: " + position.coords.longitude;
-        }        
-        getLocation() ;       
-
+        document.getElementById('submitBtn').addEventListener('click', sendData)
     </script>
     <script>
     </script>
