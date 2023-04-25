@@ -354,7 +354,21 @@
                 showStatus()
                 document.getElementById('titel').innerText = location.Title
                 document.getElementById('omschrijving').innerText = location.Desc;
-                document.getElementById('imageContainer').style.backgroundImage = `url(${location.Image})`;
+                // Set your AWS S3 bucket name and region
+                const bucketName = 'england-roadtrip';
+                const region = 'eu-west-1';
+
+                // Set the S3 object key of the image file to be loaded
+                const key = location.Title + '.jpg';
+
+                // Set the S3 URL of the image file
+                const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+                console.log(imageUrl)
+                // Get the div element
+                const div = document.getElementById('imageContainer');
+
+                // Set the background image style of the div element
+                div.style.backgroundImage = `url('${imageUrl}')`;
               });
           }
           })
@@ -376,6 +390,12 @@
                 console.log(xhr.status);
                 console.log(xhr.responseText);
             }};
+
+            
+
+          const key = sendImageToS3(imageData, title);
+
+
            let data =  {
                 "TableName": "EnglandLocations",
                 "Item": {
@@ -386,7 +406,7 @@
                     "Desc": desc,
                     "Tijdstip": Date.now().toString(),
                     "TijdstipEpoch": String(Date.now()),
-                    "Image": imageData
+                    "Image": title,
                 }
             }
           console.log(JSON.stringify(data));
@@ -417,6 +437,41 @@
 
         function closePopup() {
           document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+        }
+
+        function sendImageToS3(file, title) {
+
+          // Set the S3 object key to be the file name
+          const key = title +'.jpg';
+
+          // Set the S3 upload URL
+          const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}`;
+
+          // Create a new XMLHttpRequest object
+          const xhr = new XMLHttpRequest();
+
+          // Set the HTTP method and URL
+          xhr.open('PUT', url, true);
+
+          // Set the content type header
+          xhr.setRequestHeader('Content-Type', file.type);
+
+          // Set the ACL header to make the file publicly accessible
+          xhr.setRequestHeader('x-amz-acl', 'public-read');
+
+          // Set the onload handler to handle the server response
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              console.log(`Image uploaded successfully. File location: ${url}`);
+            } else {
+              console.error(`Error uploading image. Status code: ${xhr.status}`);
+            }
+          };
+
+          // Send the request
+          xhr.send(file);
+
+          return title;
         }
 
         document.getElementsByClassName('popup-bg').item(0).addEventListener('click', function(event) {
