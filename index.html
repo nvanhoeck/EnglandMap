@@ -365,10 +365,10 @@
                 const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
                 console.log(imageUrl)
                 // Get the div element
-                const div = document.getElementById('imageContainer');
+                const img = document.getElementById('imageContainer');
 
                 // Set the background image style of the div element
-                div.style.backgroundImage = `url('${imageUrl}')`;
+                img.src = imageUrl;
               });
           }
           })
