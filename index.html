@@ -349,7 +349,7 @@
             var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title.replace(/ /g,"_") || '', 25, 'point'));
             locationMarker.addTo(map);
             if(location.Title) {
-              document.querySelector(`[title=${location.Title}]`).addEventListener('click', () => {
+              document.querySelector(`[title=${location.Title.replace(/ /g,"_")}]`).addEventListener('click', () => {
                 document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
                 showStatus()
                 document.getElementById('titel').innerText = location.Title
@@ -455,7 +455,7 @@
           xhr.open('PUT', url, true);
 
           // Set the content type header
-          xhr.setRequestHeader('Content-Type', file.type);
+          xhr.setRequestHeader('Content-Type', 'image/jpeg');
 
           // Set the ACL header to make the file publicly accessible
           xhr.setRequestHeader('x-amz-acl', 'public-read');
@@ -491,12 +491,7 @@
       const imageUpload = document.getElementById('imageUpload');
 
       imageUpload.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          const reader = new FileReader();
-          reader.onload = () => {
-              imageData = reader.result
-          }
-          reader.readAsDataURL(file);
+          imageData = e.target.files[0];
       });
 
     </script>
