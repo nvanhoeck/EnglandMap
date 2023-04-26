@@ -442,10 +442,11 @@
         function sendImageToS3(file, title) {
 
           // Set the S3 object key to be the file name
-          const key = title.replace(/ /g,"_"); +'.jpg';
+          const key = title.replace(/ /g,"_");
 
           // Set the S3 upload URL
-          const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}`;
+          const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}.jpg`;
+          console.log(url)
 
           // Create a new XMLHttpRequest object
           const xhr = new XMLHttpRequest();
