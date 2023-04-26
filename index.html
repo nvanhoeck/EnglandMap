@@ -406,7 +406,7 @@
                     "Desc": desc,
                     "Tijdstip": Date.now().toString(),
                     "TijdstipEpoch": String(Date.now()),
-                    "Image": title+'.jpg',
+                    "Image": title.replace(/ /g,"_")+'.jpg',
                 }
             }
           console.log(JSON.stringify(data));
@@ -442,7 +442,7 @@
         function sendImageToS3(file, title) {
 
           // Set the S3 object key to be the file name
-          const key = title +'.jpg';
+          const key = title.replace(/ /g,"_"); +'.jpg';
 
           // Set the S3 upload URL
           const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}`;
@@ -471,7 +471,7 @@
           // Send the request
           xhr.send(file);
 
-          return title;
+          return title.replace(/ /g,"_");;
         }
 
         document.getElementsByClassName('popup-bg').item(0).addEventListener('click', function(event) {
