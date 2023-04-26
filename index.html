@@ -346,7 +346,7 @@
         function reqListener(evt) {
           locations = JSON.parse(JSON.parse(evt.currentTarget.responseText).body).Items
           locations.forEach(location => {
-            var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title || '', 25, 'point'));
+            var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title.replace(/ /g,"_") || '', 25, 'point'));
             locationMarker.addTo(map);
             if(location.Title) {
               document.querySelector(`[title=${location.Title}]`).addEventListener('click', () => {
@@ -359,10 +359,10 @@
                 const region = 'eu-west-1';
 
                 // Set the S3 object key of the image file to be loaded
-                const key = location.Title + '.jpg';
+                const key = location.Title;
 
                 // Set the S3 URL of the image file
-                const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+                const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}.jpg`;
                 console.log(imageUrl)
                 // Get the div element
                 const img = document.getElementById('imageContainer');
@@ -399,7 +399,7 @@
            let data =  {
                 "TableName": "EnglandLocations",
                 "Item": {
-                    "id": "0",
+                    "id": new String(Date.now()),
                     "Longitude":long,
                     "Latitude":lat,
                     "Title": title,
