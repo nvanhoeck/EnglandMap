@@ -28,6 +28,39 @@
     </style>
   </head>
   <body>
+    <div class="form-popup-bg">
+      <div class="form-container">
+        <button id="btnCloseForm" class="close-button">X</button>
+        <h1>Update van onze locatie</h1>
+        <form action="">
+          <div class="form-group">
+            <label for="">Locatie</label>
+            <input id="title" type="text" class="form-control" />
+          </div>
+            <div class="form-group">
+                <input type="file" id="imageUpload" placeholder="Foto uploaden"/>
+            </div>
+          <div class="form-group">
+            <label for="">Omschrijving</label>
+            <textarea id="desc" class="form-control"> </textarea>
+          </div>
+          <button id="submitBtn">Upload</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup-bg">
+      <div class="form-container">
+        <button id="btnClosePopup" class="close-button">X</button>
+        <h1>Update van onze locatie</h1>
+        <form action="">
+          <div class="form-group">
+            <h2 id="titel" class="form-control"></h2>
+            <p id="omschrijving" class="form-control"></p>
+              <div id="imageContainer"></div>
+          </div>
+        </form>
+      </div>
+    </div>
     <div class="buttons">
         <a class='btn' href="#" id="location">
             <i class="fab fa fa-user"></i>
@@ -38,6 +71,7 @@
     </div>
     <div id="map"></div>
     <script>
+        let imageData;
       const apiKey = "AAPK1e49dfb738404c3b98f6104f8fc16e0d5TlIqauPv_BhDBDMfKfG0Ni1ifY98OBzfzC0NMRz6mNQAu3Kepqitio_CaJyw-qe";
 
       const map = L.map("map").setView([51.12697723187457, 1.3335895828510886], 10);
@@ -65,6 +99,7 @@
       })
 
       //Markers
+
       var schipMarker = new L.Marker([51.12697723187457, 1.3335895828510886  ], markerOptions('Dover', 25, 'schip'));
       schipMarker.addTo(map);
 
@@ -269,18 +304,11 @@
       var FlamboroughMarker = new L.Marker([54.116713676938154, -0.08388877388151282], markerOptions('Flamboroughy', 25, 'binocles'));
       FlamboroughMarker.addTo(map);
 
-
-
-      var locations;
-      doGet();
-
-
       var locations;
       doGet();
 
       function getLocation() {
-          var latestLocation = locations[0]
-          console.log(latestLocation)
+          var latestLocation = locations[locations.length-1]
           showPosition(latestLocation.Latitude, latestLocation.Longitude)
         }
         
@@ -288,20 +316,62 @@
             var wijMarker = new L.Marker([latitude, longitude], markerOptions('We are here', 25, 'wij'));
             wijMarker.addTo(map);
             map.setView([latitude, longitude], 15)
+            document.querySelector(`[title="We are here"]`).addEventListener('click', () => {
+                document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+                showStatus()
+                document.getElementById('titel').innerText = locations[locations.length-1].Title
+                document.getElementById('omschrijving').innerText = locations[locations.length-1].Desc;
+                document.getElementById('imageContainer').style.backgroundImage = `url(${locations[locations.length-1].Image})`;
+            });
         }
 
         function handleLocation(position) {
-          doPost(position.coords.latitude, position.coords.longitude, 'test', locations?.length || 0)
+          const title = document.getElementById('title').value
+          const desc = document.getElementById('desc').value
+          doPost(position.coords.latitude, position.coords.longitude, title, desc, locations?.length || 0)
         }
 
         function showPopup() {
+          document.getElementsByClassName('form-popup-bg').item(0).classList.add('is-visible');
+        }
+
+        function showStatus() {
+          document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+        }
+
+        function sendData() {
             navigator.geolocation.getCurrentPosition(handleLocation)
         }
 
         function reqListener(evt) {
-          console.log('respons', evt.currentTarget.responseText.body)
           locations = JSON.parse(JSON.parse(evt.currentTarget.responseText).body).Items
-          console.log(locations)
+          locations.forEach(location => {
+            var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title.replace(/ /g,"_") || '', 25, 'point'));
+            locationMarker.addTo(map);
+            if(location.Title) {
+              document.querySelector(`[title=${location.Title.replace(/ /g,"_")}]`).addEventListener('click', () => {
+                document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+                showStatus()
+                document.getElementById('titel').innerText = location.Title
+                document.getElementById('omschrijving').innerText = location.Desc;
+                // Set your AWS S3 bucket name and region
+                const bucketName = 'england-roadtrip';
+                const region = 'eu-west-1';
+
+                // Set the S3 object key of the image file to be loaded
+                const key = location.Title;
+
+                // Set the S3 URL of the image file
+                const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}.jpg`;
+                console.log(imageUrl)
+                // Get the div element
+                const img = document.getElementById('imageContainer');
+
+                // Set the background image style of the div element
+                img.src = imageUrl;
+              });
+          }
+          })
         }
 
         function doGet() {
@@ -311,7 +381,7 @@
             xhr.send();
         }
 
-        function doPost(lat, long, desc, listSize) {
+        function doPost(lat, long, title, desc, listSize) {
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
 
@@ -320,40 +390,109 @@
                 console.log(xhr.status);
                 console.log(xhr.responseText);
             }};
+
+            
+
+          const key = sendImageToS3(imageData, title);
+
+
            let data =  {
                 "TableName": "EnglandLocations",
                 "Item": {
-                    "id": "0",
+                    "id": new String(Date.now()),
                     "Longitude":long,
                     "Latitude":lat,
-                    "Beschrijving": desc,
+                    "Title": title,
+                    "Desc": desc,
                     "Tijdstip": Date.now().toString(),
                     "TijdstipEpoch": String(Date.now()),
+                    "Image": title.replace(/ /g,"_")+'.jpg',
                 }
             }
-            console.log(JSON.stringify(data));
-
-        xhr.send(JSON.stringify(data));
+          console.log(JSON.stringify(data));
+          xhr.send(JSON.stringify(data));
+          closeForm()
         }
+
+        function closeForm() {
+          document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        }
+
+        document.getElementById('btnCloseForm').addEventListener('click', function(event) {
+          event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        })
+
+        document.getElementById('btnClosePopup').addEventListener('click', function(event) {
+          event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        })
+
+        document.getElementsByClassName('form-popup-bg').item(0).addEventListener('click', function(event) {
+          if (event.target.classList.contains('form-popup-bg') || event.target.id === 'btnCloseForm') {
+            event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+          }
+        });
+
+        function closePopup() {
+          document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+        }
+
+        function sendImageToS3(file, title) {
+
+          // Set the S3 object key to be the file name
+          const key = title.replace(/ /g,"_");
+
+          // Set the S3 upload URL
+          const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}.jpg`;
+          console.log(url)
+
+          // Create a new XMLHttpRequest object
+          const xhr = new XMLHttpRequest();
+
+          // Set the HTTP method and URL
+          xhr.open('PUT', url, true);
+
+          // Set the content type header
+          xhr.setRequestHeader('Content-Type', 'image/jpeg');
+
+          // Set the ACL header to make the file publicly accessible
+          xhr.setRequestHeader('x-amz-acl', 'public-read');
+
+          // Set the onload handler to handle the server response
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              console.log(`Image uploaded successfully. File location: ${url}`);
+            } else {
+              console.error(`Error uploading image. Status code: ${xhr.status}`);
+            }
+          };
+
+          // Send the request
+          xhr.send(file);
+
+          return title.replace(/ /g,"_");;
+        }
+
+        document.getElementsByClassName('popup-bg').item(0).addEventListener('click', function(event) {
+          if (event.target.classList.contains('popup-bg') || event.target.id === 'btnClosePopup') {
+            event.preventDefault();
+            document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+        }
+        
+        });
+  
 
         document.getElementById('location').addEventListener("click", getLocation)
         document.getElementById('update').addEventListener("click", showPopup)
-    </script>
-    <script>
-        var x = document.getElementById("gps");
-        function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPositionOnScreen);
-          } else {
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-        
-        function showPositionOnScreen(position) {
-          x.innerHTML = "Latitude: " + position.coords.latitude +
-          "<br>Longitude: " + position.coords.longitude;
-        }        
-        getLocation() ;       
+        document.getElementById('submitBtn').addEventListener('click', sendData)
+
+      const imageUpload = document.getElementById('imageUpload');
+
+      imageUpload.addEventListener('change', (e) => {
+          imageData = e.target.files[0];
+      });
 
     </script>
     <script>
