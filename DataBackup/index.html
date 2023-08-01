@@ -1,0 +1,513 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>England roadmap</title>
+    <meta content="initial-scale=1, width=device-width, user-scalable=no" name="viewport"/>
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/90e9580bdf.js"></script>
+    <link crossorigin="" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet">
+    <script crossorigin="" src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+
+    <!-- Load Esri Leaflet Vector from CDN -->
+    <script crossorigin="" src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js"></script>
+    <style>
+        html,
+        body,
+        #map {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #323232;
+        }
+    </style>
+</head>
+<body>
+<div class="form-popup-bg">
+    <div class="form-container">
+        <button class="close-button" id="btnCloseForm">X</button>
+        <h3>Update van onze locatie</h3>
+        <form action="">
+            <div class="form-group">
+                <label>Locatie</label>
+                <input class="form-control" id="title" type="text"/>
+            </div>
+            <div class="form-group">
+                <input id="imageUpload" placeholder="Foto uploaden" type="file"/>
+            </div>
+            <div class="form-group">
+                <label>Omschrijving</label>
+                <textarea class="form-control" id="desc"> </textarea>
+            </div>
+            <button id="submitBtn">Upload</button>
+        </form>
+    </div>
+</div>
+<div class="popup-bg">
+    <div class="form-container">
+        <button class="close-button" id="btnClosePopup">X</button>
+        <h1>Update van onze locatie</h1>
+        <form action="">
+            <div class="form-group">
+                <h2 class="form-control" id="titel"></h2>
+                <p class="form-control" id="omschrijving"></p>
+                <div id="imageContainer"></div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="buttons">
+    <a class='btn' href="#" id="location">
+        <i class="fab fa fa-user"></i>
+    </a>
+    <a class='btn' href="#" id="update">
+        <i class="fab fa fa-arrow-up"></i>
+    </a>
+</div>
+<div id="map"></div>
+<script>
+    let imageData;
+    const apiKey = "AAPK1e49dfb738404c3b98f6104f8fc16e0d5TlIqauPv_BhDBDMfKfG0Ni1ifY98OBzfzC0NMRz6mNQAu3Kepqitio_CaJyw-qe";
+
+    const map = L.map("map").setView([51.12697723187457, 1.3335895828510886], 10);
+
+    L.esri.Vector.vectorBasemapLayer("ArcGIS:ModernAntique:Base", {
+        apikey: apiKey,
+        pane: "tilePane" // Create the base layer in `tilePane` rather than the default `overlayPane`
+    }).addTo(map);
+
+    L.esri.Vector.vectorBasemapLayer("ArcGIS:Topographic", {
+        apikey: apiKey
+    }).addTo(map);
+
+    //Icons options
+    var iconOptions = (size, naamFoto) => ({
+        iconUrl: naamFoto + '.png',
+        iconSize: [size, size]
+    })
+
+    //Marker Options
+    var markerOptions = (title, sizeFoto, naamFoto) => ({
+        title: title,
+        clickable: true,
+        icon: L.icon(iconOptions(sizeFoto, naamFoto))
+    })
+
+    //Markers
+
+    var schipMarker = new L.Marker([51.12697723187457, 1.3335895828510886], markerOptions('Dover', 25, 'schip'));
+    schipMarker.addTo(map);
+
+    var goGlampMarker = new L.Marker([51.163790, 0.662626], markerOptions('Go Glamp', 25, 'tent'));
+    goGlampMarker.addTo(map);
+
+    var StockbridgeviewMarker = new L.Marker([51.116994, -1.510334], markerOptions('StockbridgeView', 25, 'tent'));
+    StockbridgeviewMarker.addTo(map);
+
+    var WoodovisParkMarker = new L.Marker([50.548938013747396, -4.215712085330895], markerOptions('WoodovisPark', 25, 'tent'));
+    WoodovisParkMarker.addTo(map);
+
+    var TheCrownInnMarker = new L.Marker([51.375789, -1.948202], markerOptions('TheCrownInn', 25, 'tent'));
+    TheCrownInnMarker.addTo(map);
+
+    var BredonValeCaravanCampingMarker = new L.Marker([52.122061, -1.943059], markerOptions('BredonValeCaravanCamping', 25, 'tent'));
+    BredonValeCaravanCampingMarker.addTo(map);
+
+    var HideAwayEscapesMarker = new L.Marker([51.805722, -4.723392], markerOptions('HideAwayEscapes', 25, 'tent'));
+    HideAwayEscapesMarker.addTo(map);
+
+    var GarthyFogMarker = new L.Marker([52.705752, -4.020562], markerOptions('GarthyFog', 25, 'tent'));
+    GarthyFogMarker.addTo(map);
+
+    var PenisarMynyddCaravanParkMarker = new L.Marker([53.282061, -3.360819], markerOptions('PenisarMynyddCaravanpark', 25, 'tent'));
+    PenisarMynyddCaravanParkMarker.addTo(map);
+
+    var BlackbrookLodgeCampingAndCaravanningMarker = new L.Marker([53.001042, -1.597239], markerOptions('BlackbrookLodgeCampingAndCaravanning', 25, 'tent'));
+    BlackbrookLodgeCampingAndCaravanningMarker.addTo(map);
+
+    var HowgillLodgeMarker = new L.Marker([54.029556, -1.903328], markerOptions('HowgillLodge', 25, 'tent'));
+    HowgillLodgeMarker.addTo(map);
+
+    var SykesideCampingparkMarker = new L.Marker([54.498608, -2.924738], markerOptions('SykesideCampingpark', 25, 'tent'));
+    SykesideCampingparkMarker.addTo(map);
+
+    var FallowfielDeneCaravanCampingParkMarker = new L.Marker([55.003415, -2.098948], markerOptions('FallowfielDeneCaravanCampingPark', 25, 'tent'));
+    FallowfielDeneCaravanCampingParkMarker.addTo(map);
+
+    var CoastCastlesHolidayCampSideMarker = new L.Marker([55.426304, -1.606282], markerOptions('CoastCastlesHolidayCampSide', 25, 'tent'));
+    CoastCastlesHolidayCampSideMarker.addTo(map);
+
+    var TheNewInnMarker = new L.Marker([54.290741, -0.840936], markerOptions('TheNewInn', 25, 'tent'));
+    TheNewInnMarker.addTo(map);
+
+    var WhiteCottageHolidayParkMarker = new L.Marker([53.890897, -0.179570], markerOptions('WhiteCottageHolidayPark', 25, 'tent'));
+    WhiteCottageHolidayParkMarker.addTo(map);
+
+    var RobRoyGuesthouseMarker = new L.Marker([51.08892874373544, 1.188542346902516], markerOptions('RobRoyGuesthouse', 25, 'B&B'));
+    RobRoyGuesthouseMarker.addTo(map);
+
+    var StrumbleheadWalkMarker = new L.Marker([52.03188057076068, -5.068874837335716], markerOptions('StrumbleheadWalk', 25, 'walk'));
+    StrumbleheadWalkMarker.addTo(map);
+
+    var SkomerIslandMarker = new L.Marker([51.73827639497907, -5.282070453559404], markerOptions('SkomerIsland', 25, 'walk'));
+    SkomerIslandMarker.addTo(map);
+
+    var BarafundlebayMarker = new L.Marker([51.62866167626843, -4.901983849384853], markerOptions('Barafundlebay', 25, 'walk'));
+    BarafundlebayMarker.addTo(map);
+
+    var SnowdoniaMarker = new L.Marker([52.90025518614841, -3.850434086689085], markerOptions('Snowdonia', 25, 'walk'));
+    SnowdoniaMarker.addTo(map);
+
+    var BlueLakeLagoonMarker = new L.Marker([52.68887310807573, -4.041601119207045], markerOptions('BlueLakeLagoon', 25, 'walk'));
+    BlueLakeLagoonMarker.addTo(map);
+
+    var DoveDaleWalkMarker = new L.Marker([53.06702648556779, -1.7821315752375664], markerOptions('DoveDaleWalk', 25, 'walk'));
+    DoveDaleWalkMarker.addTo(map);
+
+    var MamTorMarker = new L.Marker([53.34968532777965, -1.8089453467874037], markerOptions('MamTor', 25, 'walk'));
+    MamTorMarker.addTo(map);
+
+    var DerwentValleyMarker = new L.Marker([53.37302209316551, -1.6839709578361282], markerOptions('DerwentValley', 25, 'walk'));
+    DerwentValleyMarker.addTo(map);
+
+    var BuxtonMarker = new L.Marker([53.25862871750954, -1.9142124208551208], markerOptions('Buxton', 25, 'binocles'));
+    BuxtonMarker.addTo(map);
+
+    var PorlockHillMarker = new L.Marker([51.203989587382544, -3.611216626501566], markerOptions('PorlockHill', 25, 'binocles'));
+    PorlockHillMarker.addTo(map);
+
+    var ValeyOfRocksMarker = new L.Marker([51.23185995335312, -3.846935515057025], markerOptions('ValeyOfRocks', 25, 'walk'));
+    ValeyOfRocksMarker.addTo(map);
+
+    var CountyGateMarker = new L.Marker([51.22416669503452, -3.729934496620216], markerOptions('CountyGate', 25, 'walk'));
+    CountyGateMarker.addTo(map);
+
+    var WatersmeetMarker = new L.Marker([51.2244535255684, -3.799317630319129], markerOptions('Watersmeet', 25, 'walk'));
+    WatersmeetMarker.addTo(map);
+
+    var DunsterCastleMarker = new L.Marker([51.185959281925044, -3.438914553725686], markerOptions('DunsterCastle', 25, 'walk'));
+    DunsterCastleMarker.addTo(map);
+
+    var QuincehoneyFarmMarker = new L.Marker([51.03445196272802, -3.852313953103137], markerOptions('QuincehoneyFarm', 25, 'walk'));
+    QuincehoneyFarmMarker.addTo(map);
+
+    var BodminMoorMarker = new L.Marker([50.55542176321906, -4.609119901421127], markerOptions('BodminMoor', 25, 'walk'));
+    BodminMoorMarker.addTo(map);
+
+    var GolithaFallsMarker = new L.Marker([50.493756691216504, -4.500100309043092], markerOptions('GolithaFalls', 25, 'walk'));
+    GolithaFallsMarker.addTo(map);
+
+    var TamarValleyMarker = new L.Marker([50.5039739615158, -4.200548013087882], markerOptions('TamarValley', 25, 'walk'));
+    TamarValleyMarker.addTo(map);
+
+    var WistmansWoodsMarker = new L.Marker([50.576300305002256, -3.960734124845335], markerOptions('WistmansWoods', 25, 'walk'));
+    WistmansWoodsMarker.addTo(map);
+
+    var TwoBridgesMarker = new L.Marker([50.55854771360749, -3.962760772279403], markerOptions('TwoBridges', 25, 'binocles'));
+    TwoBridgesMarker.addTo(map);
+
+    var ColwithFarmMarker = new L.Marker([50.431540427617975, -4.6555695077705375], markerOptions('ColwithFarm', 25, 'glass'));
+    ColwithFarmMarker.addTo(map);
+
+    var WyeValleyMarker = new L.Marker([51.85331771524313, -2.5107027412772984], markerOptions('WyeValley', 25, 'binocles'));
+    WyeValleyMarker.addTo(map);
+
+    var AbereiddyBeachMarker = new L.Marker([51.9371665746255, -5.203072220653704], markerOptions('AbereiddyBeach', 25, 'walk'));
+    AbereiddyBeachMarker.addTo(map);
+
+    var HaworthMarker = new L.Marker([53.83044893555541, -1.9480695937101553], markerOptions('Haworth', 25, 'walk'));
+    HaworthMarker.addTo(map);
+
+    var YorkMarker = new L.Marker([53.96158339765615, -1.0764661110286777], markerOptions('York', 25, 'binocles'));
+    YorkMarker.addTo(map);
+
+    var HarroGateMarker = new L.Marker([53.99219305985673, -1.5426489576553934], markerOptions('HarroGate', 25, 'binocles'));
+    HarroGateMarker.addTo(map);
+
+    var FountainsAbbeyMarker = new L.Marker([54.117011770109556, -1.6133979300909695], markerOptions('FountainsAbbey', 25, 'binocles'));
+    FountainsAbbeyMarker.addTo(map);
+
+    var KettleWellMarker = new L.Marker([54.14728247909146, -2.0474873445576236], markerOptions('KettleWell', 25, 'binocles'));
+    KettleWellMarker.addTo(map);
+
+    var BuckdenMarker = new L.Marker([54.22642532845682, -2.084838979019591], markerOptions('Buckden', 25, 'binocles'));
+    BuckdenMarker.addTo(map);
+
+    var CraygillWatterfallMarker = new L.Marker([54.20671825928573, -2.0926294801268237], markerOptions('CraygillWatterfall', 25, 'walk'));
+    CraygillWatterfallMarker.addTo(map);
+
+    var WensleyDaleMarker = new L.Marker([54.30199520830182, -2.200899835986403], markerOptions('WensleyDale', 25, 'binocles'));
+    WensleyDaleMarker.addTo(map);
+
+    var BownessOnWindermereMarker = new L.Marker([54.364475838398505, -2.9091571087164994], markerOptions('BownessOnWindermere', 25, 'binocles'));
+    BownessOnWindermereMarker.addTo(map);
+
+    var TheWorldOfBeatrixpotterMarker = new L.Marker([54.36549371867022, -2.91897603581941], markerOptions('TheWorldOfBeatrixpotter', 25, 'binocles'));
+    TheWorldOfBeatrixpotterMarker.addTo(map);
+
+    var HillTopMarker = new L.Marker([54.36607352434233, -2.9052527064100895], markerOptions('HillTop', 25, 'binocles'));
+    HillTopMarker.addTo(map);
+
+    var KeswickMarker = new L.Marker([54.601330746675785, -3.1359450538427036], markerOptions('Keswick', 25, 'binocles'));
+    KeswickMarker.addTo(map);
+
+    var KirkstonePassMarker = new L.Marker([54.450448005663986, -2.9167953541555853], markerOptions('KirkstonePass', 25, 'binocles'));
+    KirkstonePassMarker.addTo(map);
+
+    var StockGhyllForceMarker = new L.Marker([54.432878611743355, -2.9511554508816205], markerOptions('StockGhyllForce', 25, 'walk'));
+    StockGhyllForceMarker.addTo(map);
+
+    var AriaForceWaterfallMarker = new L.Marker([54.57646811442016, -2.9309134937499692], markerOptions('AriaForceWaterfall', 25, 'walk'));
+    AriaForceWaterfallMarker.addTo(map);
+
+    var BarrowMarker = new L.Marker([54.586295265411074, -3.197334308404797], markerOptions('Barrow', 25, 'walk'));
+    BarrowMarker.addTo(map);
+
+    var ButtermereMarker = new L.Marker([54.540653417355024, -3.2729807420509576], markerOptions('Buttermere', 25, 'walk'));
+    ButtermereMarker.addTo(map);
+
+    var HonisterPassMarker = new L.Marker([54.51706405103112, -3.2154649618885878], markerOptions('HonisterPass', 25, 'binocles'));
+    HonisterPassMarker.addTo(map);
+
+    var NorthPenninesMarker = new L.Marker([54.70172300714032, -2.24547187236101], markerOptions('NorthPennines', 25, 'walk'));
+    NorthPenninesMarker.addTo(map);
+
+    var HaydonBridgeMarker = new L.Marker([54.97597639196611, -2.2496189709422887], markerOptions('HaydonBridge', 25, 'binocles'));
+    HaydonBridgeMarker.addTo(map);
+
+    var NorthumBerlandMarker = new L.Marker([55.08728519250054, -1.6949361920812338], markerOptions('NorthumBerland', 25, 'cheese'));
+    NorthumBerlandMarker.addTo(map);
+
+    var AlnwickMarker = new L.Marker([55.41299789523365, -1.7072307942622411], markerOptions('Alnwick', 25, 'binocles'));
+    AlnwickMarker.addTo(map);
+
+    var LRobsonAndSonsMarker = new L.Marker([55.472326432936484, -1.5925752963945483], markerOptions('LRobsonAndSons', 25, 'fish'));
+    LRobsonAndSonsMarker.addTo(map);
+
+    var DurhamMarker = new L.Marker([54.77519492179298, -1.5838304295346353], markerOptions('Durham', 25, 'binocles'));
+    DurhamMarker.addTo(map);
+
+    var RievaulxAbbeyMarker = new L.Marker([54.25670629371448, -1.1182490207458846], markerOptions('RievaulxAbbey', 25, 'binocles'));
+    RievaulxAbbeyMarker.addTo(map);
+
+    var YorkMoorsMarker = new L.Marker([54.393098310262054, -0.8019654146094678], markerOptions('YorkMoors', 25, 'walk'));
+    YorkMoorsMarker.addTo(map);
+
+    var ScarboroughMarker = new L.Marker([54.28325790344335, -0.4033220344814901], markerOptions('Scarborough', 25, 'binocles'));
+    ScarboroughMarker.addTo(map);
+
+    var FlamboroughMarker = new L.Marker([54.116713676938154, -0.08388877388151282], markerOptions('Flamboroughy', 25, 'binocles'));
+    FlamboroughMarker.addTo(map);
+
+    var locations;
+    doGet();
+
+    function getLocation() {
+        var latestLocation = locations[locations.length - 1]
+        showPosition(latestLocation.Latitude, latestLocation.Longitude)
+    }
+
+    function showPosition(latitude, longitude) {
+        var wijMarker = new L.Marker([latitude, longitude], markerOptions('We are here', 25, 'wij'));
+        wijMarker.addTo(map);
+        map.setView([latitude, longitude], 15)
+        document.querySelector(`[title="We are here"]`).addEventListener('click', () => {
+            document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+            showStatus()
+            document.getElementById('titel').innerText = locations[locations.length - 1].Title
+            document.getElementById('omschrijving').innerText = locations[locations.length - 1].Desc;
+            let imageContainer = document.getElementById('imageContainer');
+            imageContainer.style.backgroundImage = `url(${locations[locations.length - 1].Image})`;
+            imageContainer.addEventListener('click', () => {
+                window.open(`${locations[locations.length - 1].Image}`, '_blank')
+            })
+        });
+    }
+
+    function handleLocation(position) {
+        const title = document.getElementById('title').value
+        const desc = document.getElementById('desc').value
+        doPost(position.coords.latitude, position.coords.longitude, title, desc, locations?.length || 0)
+    }
+
+    function showPopup() {
+        document.getElementsByClassName('form-popup-bg').item(0).classList.add('is-visible');
+    }
+
+    function showStatus() {
+        document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+    }
+
+    function sendData() {
+        navigator.geolocation.getCurrentPosition(handleLocation)
+    }
+
+    function reqListener(evt) {
+        locations = JSON.parse(JSON.parse(evt.currentTarget.responseText).body).Items
+        locations.forEach(location => {
+            var locationMarker = new L.Marker([location.Latitude, location.Longitude], markerOptions(location?.Title.replace(/ /g, "_") || '', 25, 'point'));
+            if (location.Title) {
+                locationMarker.addTo(map).on('click', () => {
+                    document.getElementsByClassName('popup-bg').item(0).classList.add('is-visible');
+                    showStatus()
+                    document.getElementById('titel').innerText = location.Title
+                    document.getElementById('omschrijving').innerText = location.Desc;
+                    // Set your AWS S3 bucket name and region
+                    const bucketName = 'england-roadtrip';
+                    const region = 'eu-west-1';
+
+                    // Set the S3 object key of the image file to be loaded
+                    const key = location.Title.replace(/ /g, "_");
+
+                    // Set the S3 URL of the image file
+                    const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}.jpg`;
+                    console.log(imageUrl)
+                    const imageContainer = document.getElementById('imageContainer');
+                    imageContainer.style.backgroundImage = `url(${imageUrl})`;
+                    imageContainer.addEventListener('click', () => {
+                        window.open(`${imageUrl}`, '_blank')
+                    })
+                });
+            }
+        })
+    }
+
+    function doGet() {
+        let xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", reqListener);
+        xhr.open("GET", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
+        xhr.send();
+    }
+
+    function doPost(lat, long, title, desc, listSize) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "https://x1faxjobi0.execute-api.eu-west-1.amazonaws.com/prod/locations");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+            }
+        };
+
+
+        const key = sendImageToS3(imageData, title);
+
+
+        let data = {
+            "TableName": "EnglandLocations",
+            "Item": {
+                "id": String(Date.now()),
+                "Longitude": long,
+                "Latitude": lat,
+                "Title": title,
+                "Desc": desc,
+                "Tijdstip": Date.now().toString(),
+                "TijdstipEpoch": String(Date.now()),
+                "Image": title.replace(/ /g, "_") + '.jpg',
+            }
+        }
+        console.log(JSON.stringify(data));
+        xhr.send(JSON.stringify(data));
+        closeForm()
+    }
+
+    function closeForm() {
+        document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+    }
+
+    document.getElementById('btnCloseForm').addEventListener('click', function (event) {
+        event.preventDefault();
+        document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        const imageContainer = document.getElementById('imageContainer');
+        const newElement = imageContainer.cloneNode(true)
+        imageContainer.replaceWith(newElement)
+    })
+
+    document.getElementById('btnClosePopup').addEventListener('click', function (event) {
+        event.preventDefault();
+        document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        const imageContainer = document.getElementById('imageContainer');
+        const newElement = imageContainer.cloneNode(true)
+        imageContainer.replaceWith(newElement)
+    })
+
+    document.getElementsByClassName('form-popup-bg').item(0).addEventListener('click', function (event) {
+        if (event.target.classList.contains('form-popup-bg') || event.target.id === 'btnCloseForm') {
+            event.preventDefault();
+            document.getElementsByClassName('form-popup-bg').item(0).classList.remove('is-visible');
+        }
+    });
+
+    function closePopup() {
+        document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+    }
+
+    function sendImageToS3(file, title) {
+
+        // Set the S3 object key to be the file name
+        const key = title.replace(/ /g, "_");
+
+        // Set the S3 upload URL
+        const url = `https://england-roadtrip.s3.eu-west-1.amazonaws.com/${key}.jpg`;
+        console.log(url)
+
+        // Create a new XMLHttpRequest object
+        const xhr = new XMLHttpRequest();
+
+        // Set the HTTP method and URL
+        xhr.open('PUT', url, true);
+
+        // Set the content type header
+        xhr.setRequestHeader('Content-Type', 'image/jpeg');
+
+        // Set the ACL header to make the file publicly accessible
+        xhr.setRequestHeader('x-amz-acl', 'public-read');
+
+        // Set the onload handler to handle the server response
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                console.log(`Image uploaded successfully. File location: ${url}`);
+            } else {
+                console.error(`Error uploading image. Status code: ${xhr.status}`);
+            }
+        };
+
+        // Send the request
+        xhr.send(file);
+
+        return title.replace(/ /g, "_");
+    }
+
+    document.getElementsByClassName('popup-bg').item(0).addEventListener('click', function (event) {
+        if (event.target.classList.contains('popup-bg') || event.target.id === 'btnClosePopup') {
+            event.preventDefault();
+            document.getElementsByClassName('popup-bg').item(0).classList.remove('is-visible');
+            const imageContainer = document.getElementById('imageContainer');
+            const newElement = imageContainer.cloneNode(true)
+            imageContainer.replaceWith(newElement)
+        }
+
+    });
+
+
+    document.getElementById('location').addEventListener("click", getLocation)
+    document.getElementById('update').addEventListener("click", showPopup)
+    document.getElementById('submitBtn').addEventListener('click', sendData)
+
+    const imageUpload = document.getElementById('imageUpload');
+
+    imageUpload.addEventListener('change', (e) => {
+        imageData = e.target.files[0];
+    });
+
+</script>
+<script>
+</script>
+</body>
+</html>
